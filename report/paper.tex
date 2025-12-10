@@ -20,7 +20,7 @@
 
 \begin{document}
 
-\title{Project Paper Title}
+\title{Exploring a Pokemon dataset}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
 \IEEEauthorblockA{\textit{Department of Computer Science} \\
@@ -60,9 +60,13 @@ keyword, keyword, keyword, keyword
 problem. Why this problem is important or interesting? Etc.
 What has been done about this problem? What do you want
 to achieve? What is the uniqueness or the contribution of your
-study? Etc.
+study? Etc. 
+
+We should form 2 or 3 research questions we want to answer and then have one section later in the results discussing each. We should introduce each here first. 
+
+
 Brief what is your study and report organization. Provide
-the link to your code
+the link to your code. 
 
 
 \section{Materials and Methods}
@@ -71,30 +75,83 @@ the link to your code
 What data are you using? where the data come from, data
 type, data size, data range , etc
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/raw_columns_pie.png}
+    \caption{Overview of columns kept and excluded from the raw dataset.}
+    \label{fig:distr_raw_pie}
+\end{figure}
+
 \subsection{Data preprocessing}
 What you did on quality check, data clearing, data selection
 or data transformation, etc.
 
-\subsection{Data analysis/mining}
-Methods/algorithms used for your study.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/cleaned_columns_pie.png}
+    \caption{Overview of original vs computed columns in the final cleaned dataset.}
+    \label{fig:distr_cleaned_pie}
+\end{figure}
 
-\subsection{Evalution and interprations}
+\subsection{Data analysis/mining}
+\subsubsection{Pokemon Type}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/single_vs_dual_pie.png}
+    \caption{Overview of Pokemon that have single- vs dual-type.}
+    \label{fig:distr_type_pie}
+\end{figure}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/primary_type_all_and_single.png}
+    \caption{Number of Pokemon with each primary type, for all Pokemon, or single-type only Pokemon.}
+    \label{fig:distr_typeAllSingle_bar}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/primary_and_secondary_dual_type.png}
+    \caption{Number of Pokemon with primary and secondary type for dual-type Pokemon.}
+    \label{fig:distr_typeDualSecondary_bar}
+\end{figure*}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/top_type_combos.png}
+    \caption{Caption}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsubsection{Pokemon Stats}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/base_stats_distributions.png}
+    \caption{Caption}
+    \label{fig:placeholder}
+\end{figure*}
+
+
+
+\subsection{Evaluation and interpretations}
 Metrics used for evaluation such as confusion table,
 significance level. Validation methods used such as cross
 validation, independent test.
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/correlation/full_feature_correlation_heatmap.png}
+    \caption{Caption}
+    \label{fig:placeholder}
+\end{figure*}
 
 \section{Results}
 Present your results. Here you can use tables and figures to
 clearly show the results, which matches the analyses step-by
 step
 
-
-\begin{figure}[H] %H places the figure exactly where it is in the code, otherwise overleaf positions it automatically
-    \centering
-    \includegraphics[width=0.9\linewidth]{IEEE-conference-template-062824/fig1.png}
-    \caption{Example of a figure caption.}
-    \label{examplefig}
-\end{figure}
 
 Using H on the figure lets me add writing below when it usually would automatically be moved below the other paragraph due to it having space. 
 
