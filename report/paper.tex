@@ -9,6 +9,8 @@
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
+\usepackage{hyperref}
+
 \usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -16,17 +18,21 @@
 % comment commands you can change these colors
 \newcommand{\linn}[1]{\textcolor{magenta}{(Linn:~#1)}}
 \newcommand{\liya}[1]{\textcolor{orange}{(Liya:~#1)}} 
-\newcommand{\jonathan}[1]{\textcolor{blue}{(Jonathan:~#1)}} 
+\newcommand{\jonathan}[1]{\textcolor{blue}{(Jonathan:~#1)}}
+
+\bibliographystyle{IEEEtran}
+
+
 
 \begin{document}
 
 \title{Exploring a Pokemon dataset}
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Linn Erle Kloefta}
 \IEEEauthorblockA{\textit{Department of Computer Science} \\
 \textit{Georgia State University}\\
 Atlanta, United States \\
-email address or ORCID}
+lklfta1@student.gsu.edu}
 \and
 \IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
 \IEEEauthorblockA{\textit{Department of Computer Science} \\
@@ -44,159 +50,374 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-Briefly introduce your study , your analyses, your results and conclusion
+
+Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+
 \end{abstract}
 
 \vspace{0.5cm}
 
 \begin{IEEEkeywords}
-keyword, keyword, keyword, keyword
+Pokemon, Data Exploration, Correlation, Clustering, Classification Models
 \end{IEEEkeywords}
 
 \vspace{0.5cm}
 
 \section{Introduction}
-\linn{To add comments in the text easily} \liya{double click me to go to the code and see how to use your named command} \jonathan{you can change the colors at the top} Background of the study. Why do you want to study this
-problem. Why this problem is important or interesting? Etc.
-What has been done about this problem? What do you want
-to achieve? What is the uniqueness or the contribution of your
-study? Etc. 
+\subsection{Motivation \& Background}
+Growing up we all interacted with Pokemon either through the games or the TV-series, this led us to want to learn more about what makes up each Pokemon. Diving deeper into what each stat influences, how they are distributed across Pokemon with the same primary type, and investigating how the stats differ between legendary and normal Pokemon, seemed like an interesting challenge that inspired us to choose to explore this Pokemon dataset. 
 
-We should form 2 or 3 research questions we want to answer and then have one section later in the results discussing each. We should introduce each here first. 
+In this report we will first look at the distribution of the data across the types of Pokemon, then we perform a correlational analysis looking at how the stats relate to each other and the target values, after that we examine the Pokemon by clustering and identifying natural groups, lastly we use the information we gained to train two different models to classify whether a Pokemon is legendary, and to classify the type of the Pokemon it is. 
 
+Access the notebooks used during the analysis and modeling of our project on GitHub: \url{https://github.com/Redseba/Team-Rocket-Research}.
 
-Brief what is your study and report organization. Provide
-the link to your code. 
+\subsection{Research Questions}
 
+To tackle the data exploration we defined three key questions we wanted to answer. 
+\subsubsection{Which types of Pokemon are most common, and is there a difference between single- and dual-type Pokemon}
+
+We want to explore the types of Pokemon that exist, and what the breakdown looks like. And if there is anything interesting we did not know that stands out based on the type.
+
+\subsubsection{Which stats are the most determining on whether a Pokemon is legendary or not}
+
+Finding out what stats determine whether a Pokemon is classified as a legendary Pokemon can be valuable because it helps us narrow down what stats to look at when it comes to importance. It can also tell us things about the mechanics of the game that we did not know previously. 
+
+\subsubsection{Can we use the base stats of a Pokemon to determine its type}
+
+Are the six base stats; attack, defense, speed, health, special attack, and special defense, the stats that are most influential on what type category it gets classified as? If not, then what stats are, and is it possible to classify Pokemon with the correct types using data?
+
+Together, these three research questions outline how we will explore the data in this report. 
 
 \section{Materials and Methods}
 
 \subsection{Data explanation and characterization}
-What data are you using? where the data come from, data
-type, data size, data range , etc
+
+The original dataset was retrieved from Kaggle\cite{kaggle_dataset}. It contained 45 columns, and had 1382 rows, with each row representing a Pokemon, and each column representing a stat. The stats cover information like types, abilities, egg groups, evolutions, attack and defense. 14 columns that had no useful data, such as ID's, game titles, and descriptions, were dropped. Shown in Figure~\ref{fig:distr_raw_pie} this left us with a total of 68.9\% of the original dataset. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{figures/distribution/raw_columns_pie.png}
+    \includegraphics[width=0.8\linewidth]{figures/distribution/raw_columns_pie.png}
     \caption{Overview of columns kept and excluded from the raw dataset.}
     \label{fig:distr_raw_pie}
 \end{figure}
 
-\subsection{Data preprocessing}
-What you did on quality check, data clearing, data selection
-or data transformation, etc.
+\subsection{Data Preprocessing}
+
+When investigating the data we noticed that it contained some duplicate entries of Pokemon, due to descriptions changing upon newer releases of the games being released. After removing these duplicate Pokemon we were left with 1025 rows, which cover every Pokemon released in all games up until November 2022. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{figures/distribution/cleaned_columns_pie.png}
+    \includegraphics[width=0.8\linewidth]{figures/distribution/cleaned_columns_pie.png}
     \caption{Overview of original vs computed columns in the final cleaned dataset.}
     \label{fig:distr_cleaned_pie}
 \end{figure}
 
+To potentially help with analysis we computed and created 12 new columns, like BMI, which was calculated using the weight and height columns in the original dataset. After all the new columns were added to the dataset we were left with 42 columns, consisting of 72.1\% from the original dataset, and 27.9\% newly computed columns as shown in Figure~\ref{fig:distr_cleaned_pie}.
+
 \subsection{Data analysis/mining}
-\subsubsection{Pokemon Type}
+Following our three defined research questions, we analyze the data for useful and insightful information. 
+\subsubsection{Which types of Pokemon are most common, and is there
+a difference between single- and dual-type Pokemon}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{figures/distribution/single_vs_dual_pie.png}
+    \includegraphics[width=0.9\linewidth]{figures/distribution/single_vs_dual_pie.png}
     \caption{Overview of Pokemon that have single- vs dual-type.}
     \label{fig:distr_type_pie}
 \end{figure}
 
+To better understand the composition of our dataset, we have broken down the way Pokemon are classified through typing. Within the Pokemon universe, each Pokemon is assigned either only 1 elemental type (single-type) or 2 elemental types (dual-type). A single-type Pokemon can only possess one elemental type such as Fire, Water, or Grass, to name a few; as a result most Pokemon with single typing have very straightforward type match-ups (strengths and counters). In the case of dual-type Pokemon, they possess 2 elemental types leading to type combinations such as Fire/Flying, or Water/Ground, creating more complex interactions due to they inherit both strengths and weakness of their combined types. As shown in Figure~\ref{fig:distr_type_pie}, our data set reveals that 54.6\% of Pokemon are dual types, while the remaining 45.4\% are single types, showing a nearly even split in Pokemon type classifications with dual type Pokemon being slightly more common.
+
 \begin{figure*}[htbp]
     \centering
-    \includegraphics[width=1\linewidth]{figures/distribution/primary_type_all_and_single.png}
+    \includegraphics[width=0.9\linewidth]{figures/distribution/primary_type_all_and_single.png}
     \caption{Number of Pokemon with each primary type, for all Pokemon, or single-type only Pokemon.}
     \label{fig:distr_typeAllSingle_bar}
 \end{figure*}
 
 \begin{figure*}[htbp]
     \centering
-    \includegraphics[width=1\linewidth]{figures/distribution/primary_and_secondary_dual_type.png}
+    \includegraphics[width=0.9\linewidth]{figures/distribution/primary_and_secondary_dual_type.png}
     \caption{Number of Pokemon with primary and secondary type for dual-type Pokemon.}
     \label{fig:distr_typeDualSecondary_bar}
 \end{figure*}
 
+In Figure \ref{fig:distr_typeAllSingle_bar}, we observe that Water is the most common primary type overall with more than 100 Pokemon, and Flying the least common with only 9 Pokemon having it as their primary type. Interestingly we see that when we split the Pokemon up based on whether they are single- vs. dual-typed the top primary type differ between the groupings. Single-type Pokemon has Water type as the most common primary type, while in Figure~\ref{fig:distr_typeDualSecondary_bar} we can see that Bug type rose to the top as the most common primary type. This is an interesting observation, because it tells us that Bug type Pokemon are common, however they usually have more than one type. 
+
+We also notice a clear reason for Flying being low in numbers when it comes to primary-types. In Figure~\ref{fig:distr_typeDualSecondary_bar} we see that Flying clearly stands out as the most common secondary-type for dual-type Pokemon with 100 Pokemon. This explains the absence of Flying type when divided by just the primary type. 
+
+When investigating type pairings we see in Figure~\ref{fig:distr_top_combos_bar} that the most frequent ones are Normal \& Flying (25), Bug \& Flying (14), and Grass \& Poison (14), revealing that certain Pokemon typings are favored in design. It follows the expected pattern of having Flying as the most common secondary type, however it is an interesting deviation that Water is not among the three most frequent type combinations. This might be due to dual-type Water Pokemon having a greater variety in the type combinations, compared to Pokemon like Normal \& Flying which seem like a common pairing. The nearly even split shown in Figure~\ref{fig:distr_type_pie} highlights the strategic diversity of the franchise, with a lean towards dual-type Pokemon offering more complexity in design and battle mechanics through their type combinations.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{figures/distribution/top_type_combos.png}
-    \caption{Caption}
-    \label{fig:placeholder}
+    \caption{Top 12 most common dual-type combinations among Pokemon.}
+    \label{fig:distr_top_combos_bar}
 \end{figure}
 
-\subsubsection{Pokemon Stats}
+These type distribution patterns show that Pokemon follows systematic/game-design principles rather than assigning Pokemon typings at random, with certain combinations seeming to point to being heavily favored to create strategic gameplay progression and diversity
+
+\subsubsection{Which stats are the most determining on whether a
+Pokemon is legendary or not}
+
+After examining type distributions, we now move onto analyzing the statistical attributes that define each Pokemon's capabilities in combat. The six base stats consist of: Health Points (\texttt{hp}), Attack (\texttt{atk}), Defense (\texttt{def}), Special Attack (\texttt{sp. atk}), Special Defense (\texttt{sp. def}), and \texttt{speed}. These stats determine a Pokemon's battle performance and often correlate with a Pokemon's overall role. Examining the stat distributions across all Pokemon and by their primary type, we can identify patterns that can reveal whether certain Pokemon types excel in certain stats, in addition to helping us understand what makes a Pokemon legendary either through stat distribution or status alone.
+
+In Figure~\ref{fig:distr_stats_all_bar} we have visualized the distribution of the six base stats across all Pokemon types combined. This gives us a good overview of the ranges, and potential outliers within each stat category. Including covering the base stat distribution for all the Pokemon types combined, we also broke it down for each type which we can see in Figures \ref{fig:appendix_water} to \ref{fig:appendix_flying} in Appendix~\ref{sec:appendixA}. This allows us to look at how the stats are distributed within each type looking for potential patterns. We notice clear outliers in all categories which indicate that there are Pokemon present that lie outside the normal expected range. This is likely due to legendary Pokemon, and their unique stat distributions. 
 
 \begin{figure*}[htbp]
     \centering
-    \includegraphics[width=1\linewidth]{figures/distribution/base_stats_distributions.png}
-    \caption{Caption}
-    \label{fig:placeholder}
+    \includegraphics[width=0.9\linewidth]{figures/distribution/base_stats_distributions.png}
+    \caption{Distribution six base stats across all Pokemon types combined.}
+    \label{fig:distr_stats_all_bar}
 \end{figure*}
+
+
+Comparing the mean of the base stats between normal and legendary Pokemon in Figure~\ref{fig:distr_legendary_normal_bar} we see that the averages for legendary Pokemon is clearly skewing more to the right than the averages for normal Pokemon. This tells us that legendary Pokemon tend to have stats that are on average higher than normal Pokemon. Although this is often the case, we still observe some clear outliers both in the high- and low-ranges of the base stat totals of the legendary Pokemon. 
+
+Investigating these outliers in Figure~\ref{fig:distr_outlier_legendary} we see that the two Pokemon Cosmog and Eternatus lie at the very bottom, and top of the stat distribution. Cosmog has a lot lower base stats than the average legendary, and looking at Figure~\ref{fig:distr_legendary_normal_bar} it is also lower than most normal Pokemon. This led us to investigate whether the Pokemon could have been potentially mislabeled, however it is classified correctly as a legendary Pokemon according to Bulbapedia\cite{bulbapedia_cosmog} which is the wiki for the franchise. This tells us that there has to be something other than just the base stats that define a Pokemon as legendary, since those with both low and high stats can be classified as such. In the comparison we also looked at Eternatus which is the Pokemon that had higher than average legendary stats. As we can see in Figure~\ref{fig:distr_outlier_legendary} it has some stats like \texttt{hp, def},\texttt{sp. def} that are above average, and also stats that are within the expected range like \texttt{atk, sp.atk}, and \texttt{speed}. This shows that although some Pokemon have stats that can be seen as outliers, they might have some stats that lie in the normal range. This means that Eternatus is a specialist with higher stats in defensive categories, and lower stats in offensive categories to balance its average out. 
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/legendary_vs_normal_comparison.png}
+    \caption{Distribution of six base stats comparing normal and legendary Pokemon.}
+    \label{fig:distr_legendary_normal_bar}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/legendary_lowest_highest_outlier_analysis.png}
+    \caption{Outlier analysis of legendary Pokemon with high and low base stats.}
+    \label{fig:distr_outlier_legendary}
+\end{figure*}
+
+
+After investigating the potential outliers, we decided that even though there are stats that are outside the expected normal, the Pokemon include unique, or important information that needs to be included. Excluding these Pokemon might hurt the model in terms of losing potentially important information. 
+
+Other than looking at the distribution of stats, we performed a correlation analysis both between the stats themselves, as well as between the stats and the target values. The first target value is whether the Pokemon is legendary or not, and the second target value is the Pokemon's primary type. 
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/correlation/legendary_type_feature_correlations.png}
+    \caption{Correlation analysis between features and targets.}
+    \label{fig:corr_target}
+\end{figure*}
+
+
+In Figure~\ref{fig:corr_target} we investigate the fifteen most correlated features to the target values for both the models. For the legendary classifier we see that features like \texttt{has hidden ability}, \texttt{male and female ratio}, \texttt{base stat total}, and \texttt{ev yield total} have the highest numbers and therefore influence the target label most. Legendary Pokemon more often have hidden abilities compared to normal Pokemon, they also often consist of highly skewed male to female ratios which is likely why those are standing out. The \texttt{base stat total} also makes sense here because of the average being higher for legendary than normal Pokemon. The same applies to \texttt{ev yield total} which are hidden points that apply to the base stats. It also includes other stats like \texttt{base happiness} and \texttt{catch rate} which lets us know that legendary Pokemon might have abnormal base happiness rates, as well as lower catch rates than normal Pokemon. This makes sense as catching legendary Pokemon are significantly harder, and the low catch rates reflect that. 
+
+
+\subsubsection{Can we use the base stats of a Pokemon to determine its type}
+
+When directly investigating the distribution of the base stats of the Pokemon for the different types in Figures \ref{fig:appendix_water} to \ref{fig:appendix_flying} in Appendix~\ref{sec:appendixA} there are no clear patterns that stand out in terms of one type having certain stats average higher or lower. In Figure~\ref{fig:corr_target} the top features differ when we look at the primary type as the target compared to the legendary target, with features like \texttt{health ev}, \texttt{attack ev}, \texttt{physical defense}, \texttt{defense stat}, and \texttt{has secondary type} being the most influential on the primary type of a Pokemon. It does not include stats like \texttt{base stat total} or \texttt{catch rate} which leads us to think that the total base stats does not determine the type of a Pokemon, as well as its catch rate also not being influential here. This is interesting because it leads us to believe that the base stats might not be that influential on classifying the Pokemon into primary types. Instead it indicates that the ev's, which are hidden values that influence the base stats, correlate more with the primary type of a Pokemon. Whether a Pokemon has a secondary type also determines what kind of primary type it might have. This makes sense because of the different distributions of types between single-type and dual-type Pokemon.
+
+To further investigate how the different features correlate we created a heatmap. All the numeric features are categorized into six groups: base stats, EV yields, physical attributes, derived statistics, categorical numeric features, and binary features. This allows us to calculate the correlation coefficients between all numeric features, legendary status, and encoded primary type. To do a correlation analysis of categorical variables, we used label encoding to convert the primary type and secondary type into numeric values. The heatmap then shows the pairwise correlations between forty features. Each cell in the heatmap represents the Pearson correlation coefficient between two features. The color range spans from dark red to dark blue, with dark red indicating a strong positive relationship and dark blue indicating a strong negative relationship. The diagonal on the heatmap shows a perfect correlation because each feature correlates with itself perfectly. Other strong positive correlations are shown in the base stats cluster in the upper-left corner. The base stats of Attack Stat, Defense Stat, and Special Attack Stat are moderately correlated with each other, because Pokemon's with high attack also tend to have high overall stats. We can see that the primary type encoded do not have a clear relationships with any stats, which might lead to the model having a very low accuracy score.
+
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/correlation/full_feature_correlation_heatmap.png}
+    \caption{Heatmap showing relationships between Pokemon features}
+    \label{fig:corr_heatmap}
+\end{figure*}
+
+To complement this correlation analysis and explore whether Pokemon naturally group by type based on their stats, we performed an unsupervised clustering analysis. If base stats were strongly predictive of type, we would expect Pokemon to cluster into type-specific groups. However, rather than using absolute stat values (which reflect power level), we clustered based on stat proportions and specialization metrics. This approach captures how stats are distributed (each stat as a percentage of total stats) and includes specialization features such as Physical vs Special and Offensive vs Defensive balance. By using proportions rather than absolute values, we remove power level bias and focus on combat role patterns, allowing both weak and strong Pokemon with similar battle strategies to group together.
+
+
+Using the elbow method to select the optimal number of clusters, we identified k=8 as the appropriate number of cluster groups (Figure~\ref{fig:cluster_elbow} in Appendix~\ref{sec:appendixA}). The clustering achieved a silhouette score of 0.1886, indicating weak but detectable cluster structure. While this relatively low score suggests considerable overlap between combat role archetypes, it is consistent with the expectation that Pokemon stat distributions form a continuum rather than discrete categories. We then visualized these clusters using t-SNE dimensionality reduction in Figure~\ref{fig:cluster_tsne}, which shows separation between cluster groups while revealing areas of overlap.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/clustering/clusters_tsne.png}
+    \caption{Cluster groups visualized using t-SNE dimensionality reduction.}
+    \label{fig:cluster_tsne}
+\end{figure}
+
+When examining the type distribution within each cluster (Figure~\ref{fig:cluster_overview}in Appendix~\ref{sec:appendixA}), we found that clusters do not align with Pokemon types. All clusters contain multiple different types, with cluster sizes ranging from 25 Pokemon (2.4\%) to 179 Pokemon (17.5\%) but no cluster dominated by a single type. This provides strong evidence that stat distribution patterns do not correspond to type classification. This reinforces the findings from our correlation analysis: Pokemon types cannot be reliably predicted from base stats alone because different types share similar combat role archetypes.
+
+Instead of type-based groups, the clustering revealed distinct combat role archetypes. Figure~\ref{fig:cluster_radar} in Appendix~\ref{sec:appendixA} presents radar charts showing each cluster's stat profile, with the dashed gray line representing the overall average for comparison. These profiles reveal archetypes such as glass cannons (high offensive stats with low defenses), generalists (balanced stat distributions), and tanks (emphasis on defensive stats over offense). The fact that these archetypes span multiple types demonstrates that a Water-type and a Fire-type Pokemon can have nearly identical stat distributions if they serve similar combat roles.
+
+
+Figure~\ref{fig:cluster_deviation} in Appendix~\ref{sec:appendixA} quantifies how each cluster's average stats deviate from the overall mean, measured in standard deviations. Positive values indicate above-average stats for that cluster, while negative values indicate below-average stats. The magnitude of deviation reveals which stats most strongly define each archetype. For example, a cluster with high positive deviation in Attack and negative deviation in Defense represents an offensive-focused archetype that includes Pokemon of many different types.
+
+
+Together, the correlation analysis and clustering results provide converging evidence: base stats reflect combat roles and battle strategies rather than type classification. The weak silhouette score (0.1886) and the presence of all types across all clusters both demonstrate that stat-based groupings are independent of type, explaining why type prediction models may struggle with low accuracy despite clear stat-based combat archetypes emerging from the data.
 
 
 
 \subsection{Evaluation and interpretations}
-Metrics used for evaluation such as confusion table,
-significance level. Validation methods used such as cross
-validation, independent test.
+Evaluation of our research questions and how they help us going into modeling. Then start writing about the modeling process here. 
+\subsubsection{Legendary classifier}
+Details about this model evaluation and validation metrics go here like cross validation and confusion tables. we can show tables comparing tuned and untuned and we need to say WHY the metrics were selected during tuning and which one is better for final model selection.
+
+\subsubsection{Primary type classifier}
+Same as above just for this target. 
+
+\section{Results}
+Here we will talk about the results of the two(four) models and show the summary tables. We should have two tables one for the legendary results for RF and LG after tuning and CV, and one for the type results. 
+
+\section{Discussion and Conclusion}
+We need to talk about why we got good results for the legendary classified and why the primary type classifier does so bad. We can mention binary classifiers being easier, as well as the primary type not having any strongly correlating features in the dataset so to be able to improve it we need to find richer data which might not exist. State again our three research questions and our answers to each one of them directly, tying it back to the model results. Mention what we learned that was unexpected and interesting and wrap up the paper by saying what we can improve in future works. 
+
+\bibliography{references}
+
+
+\appendix
+\section{Additional Figures}
+\label{sec:appendixA}
 
 \begin{figure*}[htbp]
     \centering
-    \includegraphics[width=1\linewidth]{figures/correlation/full_feature_correlation_heatmap.png}
-    \caption{Caption}
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Water_type.png}
+    \caption{Distribution of base stats across all Water type Pokemon.}
+    \label{fig:appendix_water}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Normal_type.png}
+    \caption{Distribution of base stats across all Normal type Pokemon.}
     \label{fig:placeholder}
 \end{figure*}
 
-\section{Results}
-Present your results. Here you can use tables and figures to
-clearly show the results, which matches the analyses step-by
-step
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Grass_type.png}
+    \caption{Distribution of base stats across all Grass type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Bug_type.png}
+    \caption{Distribution of base stats across all Bug type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Psychic_type.png}
+    \caption{Distribution of base stats across all Psychic type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Fire_type.png}
+    \caption{Distribution of base stats across all Fire type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Electric_type.png}
+    \caption{Distribution of base stats across all Electric type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Rock_type.png}
+    \caption{Distribution of base stats across all Rock type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Dark_type.png}
+    \caption{Distribution of base stats across all Dark type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Poison_type.png}
+    \caption{Distribution of base stats across all Poison type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Fighting_type.png}
+    \caption{Distribution of base stats across all Fighting type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Steel_type.png}
+    \caption{Distribution of base stats across all Steel type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Ice_type.png}
+    \caption{Distribution of base stats across all Ice type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Ground_type.png}
+    \caption{Distribution of base stats across all Ground type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Ghost_type.png}
+    \caption{Distribution of base stats across all Ghost type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Dragon_type.png}
+    \caption{Distribution of base stats across all Dragon type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/distribution/all_stats_Fairy_type.png}
+    \caption{Distribution of base stats across all Fairy type Pokemon.}
+    \label{fig:placeholder}
+\end{figure*}
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/distribution/all_stats_Flying_type.png}
+    \caption{Distribution of base stats across all Flying type Pokemon.}
+    \label{fig:appendix_flying}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/clustering/elbow_method.png}
+    \caption{Elbow method showing selection of optimal k clusters.}
+    \label{fig:cluster_elbow}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.6\linewidth]{figures/clustering/type_distribution.png}
+    \caption{Distribution of the five most common types in each cluster, showing that clusters are not type-specific.}
+    \label{fig:cluster_overview}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.6\linewidth]{figures/clustering/cluster_radar_subplots.png}
+    \caption{Radar plots showing the average stat profile for each cluster compared to the overall average (dashed line).}
+    \label{fig:cluster_radar}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/clustering/cluster_deviations.png}
+    \caption{Deviation from overall mean (in standard deviations) for each cluster, showing which stats define each archetype. Positive values indicate above-average stats; negative values indicate below-average stats.}
+    \label{fig:cluster_deviation}
+\end{figure*}
 
 
-Using H on the figure lets me add writing below when it usually would automatically be moved below the other paragraph due to it having space. 
 
-\begin{table}[H]
-\caption{Caption of the table}
-\begin{center}
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Table}&\multicolumn{3}{|c|}{\textbf{Table Column Head}} \\
-\cline{2-4} 
-\textbf{Head} & \textbf{\textit{Table column subhead}}& \textbf{\textit{Subhead}}& \textbf{\textit{Subhead}} \\
-\hline
-copy& More table copy$^{\mathrm{a}}$& &  \\
-\hline
-\multicolumn{4}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
-\end{tabular}
-\label{tab1}
-\end{center}
-\end{table}
-
-Same goes for the table.
-
-\section{Discussion and Conclusion}
-Regarding the results you get, what are your understanding of
-them, for example , the model is surprisingly good or bad, and
-why; the results are as expected or not in terms relation,
-important features, etc.
-From the results, what you have learned and you want to let
-your readers know.
-Any limitation of your study, what further works can be done
-to improve.
-Overall summary of our study
-
-
-\section*{Acknowledgment}
-
-People who have helped your study but not in the author list.
-Resources you have used like data source, funding recourses for the study
-
-\begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\end{thebibliography}
-
-% \vspace{12pt}
-% \color{red}
-% IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
 
 \end{document}
