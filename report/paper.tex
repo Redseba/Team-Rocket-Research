@@ -34,34 +34,31 @@
 Atlanta, United States \\
 lklfta1@student.gsu.edu}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockN{2\textsuperscript{nd} Liya Sojan}
 \IEEEauthorblockA{\textit{Department of Computer Science} \\
 \textit{Georgia State University}\\
 Atlanta, United States \\
-email address or ORCID}
+lsojan1@student.gsu.edu}
 \and
-\IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
+\IEEEauthorblockN{3\textsuperscript{rd} Jonathan Morales}
 \IEEEauthorblockA{\textit{Department of Computer Science} \\
 \textit{Georgia State University}\\
 Atlanta, United States \\
-email address or ORCID}
+jmorales32@student.gsu.edu}
 }
 
 \maketitle
 
 \begin{abstract}
-
-Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-
+This paper analyzes a Pokemon dataset from Kaggle containing 1382 entries to explore three research questions: which types are most common and how single- versus dual-type Pokemon differ, which stats determine legendary status, and whether base stats can predict a Pokemon's type. We apply data mining techniques including exploratory data analysis, unsupervised clustering, correlation analysis, and supervised classification using logistic regression and random forest models. Our analysis reveals patterns in type distributions, identifies feature importance for classification tasks, and demonstrates the application of machine learning methods to gaming datasets with implications for understanding game mechanics and balance.
 \end{abstract}
+\vspace{0.2cm}
 
-\vspace{0.5cm}
 
 \begin{IEEEkeywords}
 Pokemon, Data Exploration, Correlation, Clustering, Classification Models
 \end{IEEEkeywords}
 
-\vspace{0.5cm}
 
 \section{Introduction}
 \subsection{Motivation \& Background}
@@ -245,25 +242,116 @@ Together, the correlation analysis and clustering results provide converging evi
 
 
 \subsection{Evaluation and interpretations}
-Evaluation of our research questions and how they help us going into modeling. Then start writing about the modeling process here. 
-\subsubsection{Legendary classifier}
-Details about this model evaluation and validation metrics go here like cross validation and confusion tables. we can show tables comparing tuned and untuned and we need to say WHY the metrics were selected during tuning and which one is better for final model selection.
+After the exploratory data analysis, it led us to our modeling approach. Once we examined the type distributions and identified that the legendary Pokemon showed higher base stats through the correlation analysis, er developed two classification models to help us answer our research questions. There is a strong correlation between stats and legendary status which would suggest that it would a successful prediction task, while the lack of clear stat and type relationship indicates that type classification would be challenging.  With these insights, it guided our feature selection and model choice. We applied both Logistic Regression and Random Forest classifiers to compare linear versus ensemble approaches. 
 
-\subsubsection{Primary type classifier}
-Same as above just for this target. 
+\subsubsection{Legendary Classifier}
+We decided to use k-fold cross-validation to make sure that our model generalizes well to unseen data and to prevent overfitting. Cross-validation will split the data into 'k' sized folds, train on k-1 folds, and test on the remaining one. This process will be repeated for all combinations, and will provide a better estimate of the model performance than a single train-test split. The confusion matrix will show details about model performance. For our Logistic Regression as seen in Figure~\ref{fig:LogReg}, it produced 23 true negatives, 3 false positives, 17 false negatives, and 214 true positives. Whereas Random Forest  as seen in Figure~\ref{fig:RandForest} produced 23 true negatives, 3 false positives, 1 false negative, and 230 true positives. Therefore, Random Forest reduced both types of errors, in particular false negatives were decreased from four to one.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{conf_mat_legendary_lr_tuned.png}
+    \caption{Model predictions vs actual legendary status}
+    \label{fig:LogReg}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{conf_mat_legendary_rf_tuned.png}
+    \caption{Model predictions vs actual legendary status}
+    \label{fig:RandForest}
+\end{figure}
+
+We tuned the hyperparameters including the number of trees, maximum depth, and minimum samples per split, for the Random Forest model. F1 was selected as our primary evaluation metric for tuning because it will balance precision and recall. This is especially crucial when dealing with imbalanced data. To make sure that our model does not achieve a high accuracy by predicting "non-legendary" for everything (since legendary Pokemon are more rare than non-legendary ones), the F1 score will ensure that we are correctly identifying both classes.
+
+We decided to select Random Forest as our final selection for many reasons. As seen in Table~\ref{tab:legendary} Random Forest has a higher F1 score (0.93) than Logistic Regression (0.79), which shows a better overall balance between precision and recall. Since the recall is also higher (0.96) than Logistic Regression (0.89), it will mean that there are less false alarms. Lastly, the ensemble approach better captures non-linear relationships in the data.
+
+\subsubsection{Primary Type Classifier}
+We decided to use the same k-fold cross-validation approach for the type classifier to make sure there is a consistent evaluation between both models. The confusion matrix from type classifier as seen Figure~\ref{fig:TypeLogReg} and Figure~\ref{fig:TypeRandForest} showed widespread misclassifications across all types. This would confirm that using base stats alone does not provide sufficient information for type prediction. There were no single type that showed a strong predictive accuracy, indicating systematic challenges rather than isolated errors. We tuned hyperparameters for both models and used a weighted F1 score as out metric, this would account for the class imbalance among the 18 types. Some types were more common than other, but weighted F1 will make sure that we are not optimizing for predicting the most frequent types. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{confusion_matrix_lr_tuned.png}
+    \caption{Confusion matrix showing logistic regression classification performance across Pokemon types}
+    \label{fig:TypeLogReg}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{confusion_matrix_rf_tuned.png}
+    \caption{Confusion matrix showing random forest classification performance across Pokemon types}
+    \label{fig:TypeRandForest}
+\end{figure}
+
+Even though Random Forest performed better, both models had a poor performance, which shows that the feature set of base stats is insufficient for this classification task.  Since both models had a similar performance, this would show that the problem lies in the features themselves instead of the model complexity, because even Random Forest could not extract meaningful patterns.
 
 \section{Results}
-Here we will talk about the results of the two(four) models and show the summary tables. We should have two tables one for the legendary results for RF and LG after tuning and CV, and one for the type results. 
+Here we will talk about the results achieved from the two(four) models and show the associated summary tables
+
+\subsection{Legendary Pokemon Classifier Results}
+After incorporating hyperparameter tuning and cross-validation, as seen both models displayed strong performances in predicting a Pokemon's legendary status. As seen in Table~\ref{tab:legendary} our Logistic Regression model achieved 95\% accuracy with a F1 score of 0.79, this shows that even a linear model can separate legendary Pokemon from non-legendaries effectively. As also seen on Table~\ref{tab:legendary} our  Random Forest classifier outperformed the Logistic Regression across in all categories, achieving a 98\% accuracy, a 89\% in precision, and lastly a 96\% in recall in addition to having a F1 score of 0.93. With its superior performance it can be inferred that the Random Forest model better captures the complex, non-linear relationships between a Pokemon's stats and their status in being a legendary. Most particularly important to point out is the 96\% signifying that model correctly identifies nearly all legendary with very little false negatives
+
+\begin{table}[h]
+\centering
+\caption{Legendary Pokémon Classifier Performance}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\hline
+Logistic Regression & 0.95 & 0.73 & 0.85 & 0.79 \\
+Random Forest & 0.98 & 0.89 & 0.96 & 0.93 \\
+\hline
+\end{tabular}
+\label{tab:legendary}
+\end{table}
+
+\subsection{Pokemon Type Classifier Results}
+For the type classification, the task proved to be more challenging in comparison to the legendary classifier. In the case of the Logistic Regression model as seen in Table~\ref{tab:type} it achieved a 26\% accuracy with an F1 score of 0.21, while with the Random Forest model additionally locared in Table~\ref{tab:type} it showed only very marginal improvements with only a accuracy of 28\% and a F1 score of 0.24. Even though our numbers appeared low, it's important to take into consideration with a total of 18 primary types, random guessing would only have a accuracy of 5.6\%, from this it could be said our models performed roughly 5 times as better than guessing from chance. However, these performances indicate that base stats alone are not enough in regards to predicting a Pokemon's type, as mentioned type it seems typing is more driven based off design themes, elemental characteristics, and in-universe lore instead of pure statistical attributes.
+
+\begin{table}[h]
+\centering
+\caption{Pokémon Type Classifier Performance}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\hline
+Logistic Regression & 0.26 & 0.21 & 0.23 & 0.21 \\
+Random Forest & 0.28 & 0.25 & 0.25 & 0.24 \\
+\hline
+\end{tabular}
+\label{tab:type}
+\end{table}
+
+The visible contrast between the two classifications yields an important insight: while a Pokemon's legendary status correlates heavily with a higher base stat total, Pokemon types reflect conceptual and thematic decisions that cannot be derived from numerical features alone.
 
 \section{Discussion and Conclusion}
-We need to talk about why we got good results for the legendary classified and why the primary type classifier does so bad. We can mention binary classifiers being easier, as well as the primary type not having any strongly correlating features in the dataset so to be able to improve it we need to find richer data which might not exist. State again our three research questions and our answers to each one of them directly, tying it back to the model results. Mention what we learned that was unexpected and interesting and wrap up the paper by saying what we can improve in future works. 
+\subsection{Why the Legendary Classifier Succeeded}
+Our legendary Pokemon classifier as seen in Table~\ref{tab:legendary} achieved highly accurate results with an accuracy of 98\% as a result of the type of classification problem it is containing clear patterns. Legendary Pokemon consistently have greater base stat total when in comparison to non-legendary Pokemon, in-turn creating a visible distinction that the model could easily identify. The Random Forest model performed best due to it being able to capture the complex relationships between the differing stats. This type of classification problem generally is much more feasible when compared to a problem that uses multiple classes since the model only has to separate 2 groups instead of many
+
+\subsection{Why the Primary Type Classifier Performed Poorly}
+The type classifier as seen on Table~\ref{tab:type} had a drastically different outcome in comparison to the legendary model. With an accuracy of 28\% the type classifier model displayed that Pokemon types don't strongly correlate with base stats. Types are assigned base on either themes or design choices, not heavily relying on statistical patterns. A Fire-type and Grass-type Pokemon might have the same stat totals, making them very hard to distinguish from one another using numbers alone. However there is a possibility of improving the accuracy of the classifier by using more richer data such as abilities, move pools, and etc.
+
+\subsection{Research Questions Revisited}
+\subsubsection{Which types of Pokemon are most common, and is there a difference between single and dual-type Pokemon}
+The common Pokemon types consist of Water, Normal, and Grass types serving as the top 3. The main difference between dual-type and single type Pokemon, is that dual type Pokemon are more prevalent than single-type, with combinations like Water/Flying and Grass/Poison appearing very frequently.
+
+\subsubsection{Which stats are the most determining on whether a Pokemon is legendary or not?}
+The strongest indicators for whether a Pokemon is legendary or not are overall base stat totals, Special Attack, Special Defense, and HP. Our Random Forest model's 98\% accuracy confirms that these stats determine a Pokemon's legendary status
+
+\subsubsection{Can we use the base stats of a Pokemon is legendary or not?}
+No, this is due to the result of our accuracy being 28\% as seen on Table~\ref{type} determining base stats alone cannot predict a Pokemon's typing. A Pokemon's type assignment is drive beyond factors like statistical attributes.
+
+\subsection{Unexpected Findings}
+We were most surprised with how type classification resulted so poorly, we expected types to align with stat patterns (More defensive type Pokemon such as Rock or Steel to have higher defense, etc.), but instead our data showed otherwise. Alongside that we were impressed by how the legendary classifier came out, suggesting intentional game design when creating legendary Pokemon. 
+
+\subsection{Future Work}
+To improve upon our type classifications, we would need to add additional features such as move pools, abilities, and visual characteristics as mentioned previously. Our future research could extend into predicting competitive viability of Pokemon, usage rates in battles, and expanding upon our successful legendary classification framework to incorporate detections for pseudo-legendary or mythical Pokemon.
 
 \bibliography{references}
 
-
-\appendix
+\newpage
+\appendices
 \section{Additional Figures}
 \label{sec:appendixA}
+
 
 \begin{figure*}[htbp]
     \centering
